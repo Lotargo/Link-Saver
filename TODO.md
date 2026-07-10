@@ -4,7 +4,7 @@
 
 - Current phase: Phase 4, Favourite feature.
 - Last verified state: the frontend submits and lists links, displays titles, URLs, and timestamps, deletes selected links, and exposes loading, empty, and error states; tests, linting, static-asset checks, and a user-performed browser smoke test pass.
-- Next action: add persisted favourites and the filtering API operation.
+- Next action: perform the user browser smoke test for favourites, then begin Phase 5.
 - Blockers: none.
 
 ## Phase 0: Preparation
@@ -82,13 +82,13 @@
 
 ## Phase 4: Favourite feature
 
-- [ ] Add a persisted favourite field with a safe default for existing records.
-- [ ] Add the favourite update operation.
-- [ ] Add the favourite control to each link.
-- [ ] Add the favourites-only filter.
-- [ ] Verify favourite state survives restart.
-- [ ] Add regression tests for update and filtering behaviour.
-- [ ] Record the exact changed files for the final README.
+- [x] Add a persisted favourite field with a safe default for existing records.
+- [x] Add the favourite update operation.
+- [x] Add the favourite control to each link.
+- [x] Add the favourites-only filter.
+- [x] Verify favourite state survives restart.
+- [x] Add regression tests for update and filtering behaviour.
+- [x] Record the exact changed files for the final README.
 
 ## Phase 5: Existing-code review
 
@@ -129,3 +129,4 @@ Add only information needed by the next session. Keep this section short.
 - Phase 1 verification: `pnpm test`, `pnpm lint`, and a manual HTTP request to the running server passed on 2026-07-10.
 - Phase 2 verification: `pnpm test` (10 passing), `pnpm lint`, and manual `GET /api/links` plus invalid `POST /api/links` checks passed on 2026-07-10.
 - Phase 3 verification: `pnpm test` (14 passing), `pnpm lint`, and static checks for `/` and `/favicon.svg` passed on 2026-07-10. The user manually verified saving and viewing a link in the browser. The timestamp field regression (`createdAt` versus API field `savedAt`) was fixed with a frontend regression test.
+- Phase 4 verification: `pnpm test` (19 passing), `pnpm lint`, and a local HTTP smoke test (`GET /api/links` = 200; invalid favourite `PATCH` = 400) passed on 2026-07-10. Browser verification of the favourite control and filter is pending user confirmation.

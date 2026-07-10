@@ -32,6 +32,28 @@ input {
   margin: 1.5rem 0;
 }
 
+.list-heading,
+.filter-control,
+.link-actions {
+  display: flex;
+  align-items: center;
+}
+
+.list-heading {
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.filter-control,
+.link-actions {
+  gap: 0.5rem;
+}
+
+.filter-control input {
+  flex: none;
+  min-width: auto;
+}
+
 .form-row {
   display: flex;
   gap: 0.75rem;
@@ -136,6 +158,15 @@ a:focus-visible {
   background: #991b1b;
 }
 
+.favourite-button {
+  background: #a16207;
+}
+
+.favourite-button:hover:not(:disabled),
+.favourite-button.is-favourite {
+  background: #854d0e;
+}
+
 @media (max-width: 34rem) {
   .page {
     width: auto;
@@ -147,6 +178,11 @@ a:focus-visible {
   .link-card {
     grid-template-columns: 1fr;
     display: grid;
+  }
+
+  .list-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .delete-button {

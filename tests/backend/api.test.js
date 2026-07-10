@@ -10,6 +10,12 @@ function createStore() {
   return {
     async list() { return links; },
     async create(link) { links.push(link); return link; },
+    async update(id, changes) {
+      const index = links.findIndex((link) => link.id === id);
+      if (index === -1) return null;
+      links[index] = { ...links[index], ...changes };
+      return links[index];
+    },
     async delete(id) {
       const index = links.findIndex((link) => link.id === id);
       return index === -1 ? null : links.splice(index, 1)[0];
@@ -45,6 +51,39 @@ test('creates, lists, and deletes only the selected saved link', async () => {
 
     const remaining = await (await fetch(`${baseUrl}/api/links`)).json();
     assert.deepEqual(remaining.links.map((link) => link.id), [second.link.id]);
+  });
+});
+
+test('updates favourites and filters the saved-link list', async () => {
+  await withApi(async (baseUrl) => {
+    const create = async (url) => (await (await fetch(`${baseUrl}/api/links`, {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ url })
+    })).json()).link;
+    const first = await create('https://one.example');
+    const second = await create('https://two.example');
+
+    const update = await fetch(`${baseUrl}/api/links/${second.id}/favourite`, {
+      method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ favourite: true })
+    });
+    assert.equal(update.status, 200);
+    assert.equal((await update.json()).link.favourite, true);
+
+    const favourites = await (await fetch(`${baseUrl}/api/links?favourites=true`)).json();
+    assert.deepEqual(favourites.links.map((link) => link.id), [second.id]);
+    assert.equal(first.favourite, false);
+  });
+});
+
+test('rejects invalid favourite updates and filters', async () => {
+  await withApi(async (baseUrl) => {
+    const invalidUpdate = await fetch(`${baseUrl}/api/links/missing/favourite`, {
+      method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ favourite: 'yes' })
+    });
+    assert.equal(invalidUpdate.status, 400);
+    assert.equal((await invalidUpdate.json()).error.code, 'VALIDATION_ERROR');
+
+    const invalidFilter = await fetch(`${baseUrl}/api/links?favourites=false`);
+    assert.equal(invalidFilter.status, 400);
   });
 });
 

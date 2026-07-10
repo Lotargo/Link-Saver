@@ -1,6 +1,6 @@
 const { randomUUID } = require('node:crypto');
 
-const { NotFoundError } = require('../errors');
+const { NotFoundError, ValidationError } = require('../errors');
 const { normaliseUrl } = require('../lib/url');
 const { fetchPageTitle } = require('../lib/title-fetcher');
 
@@ -10,8 +10,9 @@ class LinkService {
     this.titleFetcher = titleFetcher;
   }
 
-  async list() {
-    return this.store.list();
+  async list({ favouritesOnly = false } = {}) {
+    const links = await this.store.list();
+    return favouritesOnly ? links.filter((link) => link.favourite) : links;
   }
 
   async create(url) {
@@ -21,7 +22,8 @@ class LinkService {
       id: randomUUID(),
       url: normalisedUrl,
       title,
-      savedAt: new Date().toISOString()
+      savedAt: new Date().toISOString(),
+      favourite: false
     };
 
     return this.store.create(link);
@@ -32,6 +34,19 @@ class LinkService {
     if (!deletedLink) {
       throw new NotFoundError('The saved link was not found.');
     }
+  }
+
+  async setFavourite(id, favourite) {
+    if (typeof favourite !== 'boolean') {
+      throw new ValidationError('Favourite must be true or false.');
+    }
+
+    const updatedLink = await this.store.update(id, { favourite });
+    if (!updatedLink) {
+      throw new NotFoundError('The saved link was not found.');
+    }
+
+    return updatedLink;
   }
 }
 

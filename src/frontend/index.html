@@ -26,7 +26,13 @@
       <p id="loading-message" class="message" role="status" hidden></p>
 
       <section aria-labelledby="saved-links-heading">
-        <h2 id="saved-links-heading">Saved links</h2>
+        <div class="list-heading">
+          <h2 id="saved-links-heading">Saved links</h2>
+          <label class="filter-control" for="favourites-only">
+            <input id="favourites-only" type="checkbox">
+            Favourites only
+          </label>
+        </div>
         <p id="empty-state" class="empty-state" hidden>No links saved yet. Add a page above to get started.</p>
         <ul id="link-list" class="link-list" aria-live="polite"></ul>
       </section>

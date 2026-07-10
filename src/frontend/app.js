@@ -3,11 +3,21 @@ function normaliseLinks(links) {
     return [];
   }
 
-  return links.filter((link) => link && typeof link.id === 'string' && typeof link.title === 'string' && typeof link.url === 'string' && typeof link.savedAt === 'string');
+  return links
+    .filter((link) => link && typeof link.id === 'string' && typeof link.title === 'string' && typeof link.url === 'string' && typeof link.savedAt === 'string')
+    .map((link) => ({ ...link, favourite: link.favourite === true }));
 }
 
 function removeLink(links, id) {
   return links.filter((link) => link.id !== id);
+}
+
+function replaceLink(links, updatedLink) {
+  return links.map((link) => (link.id === updatedLink.id ? updatedLink : link));
+}
+
+function filterFavourites(links) {
+  return links.filter((link) => link.favourite);
 }
 
 function formatTimestamp(timestamp) {
@@ -37,8 +47,8 @@ async function request(url, options) {
 
 function createLinkApi() {
   return {
-    async list() {
-      const payload = await request('/api/links');
+    async list(favouritesOnly = false) {
+      const payload = await request(favouritesOnly ? '/api/links?favourites=true' : '/api/links');
       return normaliseLinks(payload.links);
     },
     async create(url) {
@@ -51,6 +61,14 @@ function createLinkApi() {
     },
     delete(id) {
       return request(`/api/links/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    },
+    async setFavourite(id, favourite) {
+      const payload = await request(`/api/links/${encodeURIComponent(id)}/favourite`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ favourite })
+      });
+      return payload.link;
     }
   };
 }
@@ -63,7 +81,8 @@ function createPage(document, api = createLinkApi()) {
   const emptyState = document.querySelector('#empty-state');
   const errorMessage = document.querySelector('#error-message');
   const loadingMessage = document.querySelector('#loading-message');
-  const state = { links: [], saving: false };
+  const favouritesOnly = document.querySelector('#favourites-only');
+  const state = { links: [], saving: false, favouritesOnly: false };
 
   function clearError() {
     errorMessage.textContent = '';
@@ -86,6 +105,7 @@ function createPage(document, api = createLinkApi()) {
 
   function render() {
     list.replaceChildren();
+    emptyState.textContent = state.favouritesOnly ? 'No favourite links saved yet.' : 'No links saved yet. Add a page above to get started.';
     emptyState.hidden = state.links.length !== 0;
     for (const link of state.links) {
       const item = document.createElement('li');
@@ -109,8 +129,17 @@ function createPage(document, api = createLinkApi()) {
       deleteButton.className = 'delete-button';
       deleteButton.textContent = 'Delete';
       deleteButton.addEventListener('click', () => deleteSavedLink(link.id, deleteButton));
+      const favouriteButton = document.createElement('button');
+      favouriteButton.type = 'button';
+      favouriteButton.className = `favourite-button${link.favourite ? ' is-favourite' : ''}`;
+      favouriteButton.setAttribute('aria-pressed', String(link.favourite));
+      favouriteButton.textContent = link.favourite ? 'Remove favourite' : 'Add favourite';
+      favouriteButton.addEventListener('click', () => toggleFavourite(link, favouriteButton));
+      const actions = document.createElement('div');
+      actions.className = 'link-actions';
+      actions.append(favouriteButton, deleteButton);
       details.append(title, anchor, time);
-      item.append(details, deleteButton);
+      item.append(details, actions);
       list.append(item);
     }
   }
@@ -118,7 +147,7 @@ function createPage(document, api = createLinkApi()) {
   async function loadLinks() {
     clearError();
     try {
-      state.links = await api.list();
+      state.links = await api.list(state.favouritesOnly);
       render();
     } catch (error) {
       showError(error.message);
@@ -134,7 +163,7 @@ function createPage(document, api = createLinkApi()) {
     setSaving(true);
     try {
       const link = await api.create(input.value.trim());
-      state.links = normaliseLinks([...state.links, link]);
+      state.links = state.favouritesOnly ? await api.list(true) : normaliseLinks([...state.links, link]);
       input.value = '';
       render();
     } catch (error) {
@@ -157,13 +186,34 @@ function createPage(document, api = createLinkApi()) {
     }
   }
 
+  async function toggleFavourite(link, button) {
+    clearError();
+    button.disabled = true;
+    try {
+      const updatedLink = await api.setFavourite(link.id, !link.favourite);
+      state.links = state.favouritesOnly && !updatedLink.favourite
+        ? removeLink(state.links, updatedLink.id)
+        : replaceLink(state.links, updatedLink);
+      render();
+    } catch (error) {
+      button.disabled = false;
+      showError(error.message);
+    }
+  }
+
+  function changeFilter() {
+    state.favouritesOnly = favouritesOnly.checked;
+    loadLinks();
+  }
+
   form.addEventListener('submit', saveLink);
+  favouritesOnly.addEventListener('change', changeFilter);
   loadLinks();
   return { loadLinks, render, state };
 }
 
 if (typeof module !== 'undefined') {
-  module.exports = { formatApiError, formatTimestamp, normaliseLinks, removeLink };
+  module.exports = { filterFavourites, formatApiError, formatTimestamp, normaliseLinks, removeLink, replaceLink };
 }
 
 if (typeof document !== 'undefined') {

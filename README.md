@@ -30,3 +30,17 @@ Actual key prompts used during implementation will be added later without rewrit
 ## Status
 
 The planning and instruction layer is complete. Application code has not been implemented yet. The next step is Phase 1 in `PLAN.md`.
+
+## Favourite feature files
+
+The favourite state and favourites-only filtering are implemented in:
+
+- `src/backend/routes/link-routes.js`
+- `src/backend/services/link-service.js`
+- `src/backend/storage/json-link-store.js`
+- `src/frontend/index.html`
+- `src/frontend/app.js`
+- `src/frontend/styles.css`
+- `tests/backend/api.test.js`
+- `tests/backend/json-link-store.test.js`
+- `tests/frontend/app.test.js`
