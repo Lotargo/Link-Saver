@@ -71,7 +71,9 @@ pnpm test
 pnpm lint
 ```
 
-After backend or integration changes, also start the application and perform a short manual smoke test.
+After backend or integration changes, also start the application and perform a short HTTP smoke test.
+
+Do not run or automate browser checks through Codex. Give the user the start command or leave the local server running, then let the user perform browser verification. Record the user's reported result in `TODO.md`; if it is still pending, do not mark the browser smoke-test item complete.
 
 If a required command cannot run, record the reason in `TODO.md` instead of pretending verification succeeded.
 
