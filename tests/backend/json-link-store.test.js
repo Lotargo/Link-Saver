@@ -26,7 +26,7 @@ test('initialises missing storage and reloads saved links', async () => {
     await store.initialise();
     assert.deepEqual(JSON.parse(await fs.readFile(filePath, 'utf8')), []);
 
-    const link = { id: 'first', url: 'https://example.com/', title: 'Example', savedAt: '2026-01-01T00:00:00.000Z', favourite: false };
+    const link = { id: 'first', url: 'https://example.com/', title: 'Example', savedAt: '2026-01-01T00:00:00.000Z', favourite: false, titleStatus: 'fetched' };
     await store.create(link);
 
     const reloadedStore = new JsonLinkStore({ filePath });
@@ -45,7 +45,7 @@ test('defaults legacy records to non-favourites and persists favourite updates a
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await fs.writeFile(filePath, JSON.stringify([legacyLink]), 'utf8');
     await store.initialise();
-    assert.deepEqual(await store.list(), [{ ...legacyLink, favourite: false }]);
+    assert.deepEqual(await store.list(), [{ ...legacyLink, favourite: false, titleStatus: 'fetched' }]);
 
     await store.update('legacy', { favourite: true });
     const reloadedStore = new JsonLinkStore({ filePath });
@@ -72,8 +72,8 @@ test('rejects malformed persisted data without replacing it', async () => {
 
 test('updates and deletes only the selected link', async () => {
   const { directory, store } = await createTemporaryStore();
-  const first = { id: 'first', url: 'https://one.example/', title: 'One', savedAt: '2026-01-01T00:00:00.000Z', favourite: false };
-  const second = { id: 'second', url: 'https://two.example/', title: 'Two', savedAt: '2026-01-02T00:00:00.000Z', favourite: false };
+  const first = { id: 'first', url: 'https://one.example/', title: 'One', savedAt: '2026-01-01T00:00:00.000Z', favourite: false, titleStatus: 'fetched' };
+  const second = { id: 'second', url: 'https://two.example/', title: 'Two', savedAt: '2026-01-02T00:00:00.000Z', favourite: false, titleStatus: 'fetched' };
 
   try {
     await store.initialise();

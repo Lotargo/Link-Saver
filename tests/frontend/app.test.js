@@ -4,7 +4,7 @@ const test = require('node:test');
 const { filterFavourites, formatApiError, formatTimestamp, normaliseLinks, removeLink, replaceLink } = require('../../src/frontend/app');
 
 test('normaliseLinks keeps renderable API link records only', () => {
-  const valid = { id: 'one', title: 'Example', url: 'https://example.com', savedAt: '2026-07-10T00:00:00.000Z', favourite: false };
+  const valid = { id: 'one', title: 'Example', url: 'https://example.com', savedAt: '2026-07-10T00:00:00.000Z', favourite: false, titleStatus: 'fetched' };
   assert.deepEqual(normaliseLinks([valid, null, { id: 'two', title: 'Missing URL' }, { id: 'three', title: 'Missing timestamp', url: 'https://example.test' }]), [valid]);
   assert.deepEqual(normaliseLinks({ links: [valid] }), []);
 });
@@ -26,6 +26,13 @@ test('normaliseLinks defaults missing favourite state and filters favourites onl
   ]);
   assert.equal(links[0].favourite, false);
   assert.deepEqual(filterFavourites(links).map((link) => link.id), ['two']);
+});
+
+test('normaliseLinks preserves the unavailable-title marker', () => {
+  const [link] = normaliseLinks([
+    { id: 'one', title: 'chatgpt.com', url: 'https://chatgpt.com/', savedAt: '2026-07-10T00:00:00.000Z', titleStatus: 'unavailable' }
+  ]);
+  assert.equal(link.titleStatus, 'unavailable');
 });
 
 test('replaceLink changes only the selected favourite state', () => {

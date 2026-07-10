@@ -17,13 +17,17 @@ class LinkService {
 
   async create(url) {
     const normalisedUrl = normaliseUrl(url);
-    const title = await this.titleFetcher(normalisedUrl);
+    const titleResult = await this.titleFetcher(normalisedUrl);
+    const { title, titleStatus = 'fetched' } = typeof titleResult === 'string'
+      ? { title: titleResult }
+      : titleResult;
     const link = {
       id: randomUUID(),
       url: normalisedUrl,
       title,
       savedAt: new Date().toISOString(),
-      favourite: false
+      favourite: false,
+      titleStatus
     };
 
     return this.store.create(link);

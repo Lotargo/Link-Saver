@@ -54,6 +54,28 @@ test('creates, lists, and deletes only the selected saved link', async () => {
   });
 });
 
+test('saves a link with a title-unavailable marker when title retrieval is blocked', async () => {
+  const store = createStore();
+  const linkService = new LinkService({
+    store,
+    titleFetcher: async () => ({ title: 'chatgpt.com', titleStatus: 'unavailable' })
+  });
+  const server = http.createServer(createApp({ linkService }));
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+
+  try {
+    const response = await fetch(`http://127.0.0.1:${server.address().port}/api/links`, {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ url: 'https://chatgpt.com/' })
+    });
+    const payload = await response.json();
+    assert.equal(response.status, 201);
+    assert.equal(payload.link.title, 'chatgpt.com');
+    assert.equal(payload.link.titleStatus, 'unavailable');
+  } finally {
+    await new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
+  }
+});
+
 test('updates favourites and filters the saved-link list', async () => {
   await withApi(async (baseUrl) => {
     const create = async (url) => (await (await fetch(`${baseUrl}/api/links`, {

@@ -5,7 +5,11 @@ function normaliseLinks(links) {
 
   return links
     .filter((link) => link && typeof link.id === 'string' && typeof link.title === 'string' && typeof link.url === 'string' && typeof link.savedAt === 'string')
-    .map((link) => ({ ...link, favourite: link.favourite === true }));
+    .map((link) => ({
+      ...link,
+      favourite: link.favourite === true,
+      titleStatus: link.titleStatus === 'unavailable' ? 'unavailable' : 'fetched'
+    }));
 }
 
 function removeLink(links, id) {
@@ -124,6 +128,10 @@ function createPage(document, api = createLinkApi()) {
       time.className = 'link-time';
       time.dateTime = link.savedAt;
       time.textContent = `Saved ${formatTimestamp(link.savedAt)}`;
+      const titleNotice = document.createElement('p');
+      titleNotice.className = 'title-notice';
+      titleNotice.textContent = 'Page title unavailable: this site blocks automatic retrieval.';
+      titleNotice.hidden = link.titleStatus !== 'unavailable';
       const deleteButton = document.createElement('button');
       deleteButton.type = 'button';
       deleteButton.className = 'delete-button';
@@ -138,7 +146,7 @@ function createPage(document, api = createLinkApi()) {
       const actions = document.createElement('div');
       actions.className = 'link-actions';
       actions.append(favouriteButton, deleteButton);
-      details.append(title, anchor, time);
+      details.append(title, anchor, time, titleNotice);
       item.append(details, actions);
       list.append(item);
     }

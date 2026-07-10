@@ -42,7 +42,7 @@ For each coherent batch of related tasks:
 5. Run the relevant checks.
 6. Fix failures before moving on.
 7. Update `TODO.md` only after the work is verified.
-8. Commit the completed batch before starting unrelated work.
+8. When the batch changes browser-visible behaviour, wait for the user's successful browser smoke-test confirmation before committing. Only then update the corresponding browser verification in `TODO.md` and commit the completed batch.
 
 A commit may cover several adjacent TODO items when they form one logical result. Do not mark work complete merely because code was written.
 
@@ -74,6 +74,8 @@ pnpm lint
 After backend or integration changes, also start the application and perform a short HTTP smoke test.
 
 Do not run or automate browser checks through Codex. Give the user the start command or leave the local server running, then let the user perform browser verification. Record the user's reported result in `TODO.md`; if it is still pending, do not mark the browser smoke-test item complete.
+
+Do not stage or commit browser-visible implementation changes before the user reports that the browser verification passed. Automated tests, linting, and HTTP smoke tests do not replace this confirmation.
 
 If a required command cannot run, record the reason in `TODO.md` instead of pretending verification succeeded.
 

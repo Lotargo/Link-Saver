@@ -79,7 +79,11 @@ class JsonLinkStore {
         throw new Error('Saved links must be an array.');
       }
 
-      return links.map((link) => ({ ...link, favourite: link.favourite === true }));
+      return links.map((link) => ({
+        ...link,
+        favourite: link.favourite === true,
+        titleStatus: link.titleStatus === 'unavailable' ? 'unavailable' : 'fetched'
+      }));
     } catch {
       throw new StorageError('Saved links are invalid. Fix the data file before restarting.');
     }

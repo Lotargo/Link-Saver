@@ -34,6 +34,15 @@ test('fetches titles and reports unsuccessful or non-HTML responses', async () =
   );
 });
 
+test('returns a title-unavailable result when a site blocks automated retrieval', async () => {
+  const blockedFetch = async () => new Response('', { status: 403 });
+
+  assert.deepEqual(
+    await fetchPageTitle('https://chatgpt.com/', { fetchImpl: blockedFetch }),
+    { title: 'chatgpt.com', titleStatus: 'unavailable' }
+  );
+});
+
 test('reports a timed-out title request', async () => {
   const slowFetch = (url, { signal }) => new Promise((resolve, reject) => {
     signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')));

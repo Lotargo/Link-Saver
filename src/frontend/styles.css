@@ -44,6 +44,10 @@ input {
   gap: 1rem;
 }
 
+.list-heading h2 {
+  margin: 0;
+}
+
 .filter-control,
 .link-actions {
   gap: 0.5rem;
@@ -118,10 +122,17 @@ a:focus-visible {
 .link-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
   gap: 0.75rem;
   padding: 1rem;
   border: 1px solid #cbd5e1;
   border-radius: 0.35rem;
+}
+
+.link-actions {
+  align-self: start;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .link-title,
@@ -138,6 +149,12 @@ a:focus-visible {
 .link-time {
   display: block;
   margin-top: 0.35rem;
+}
+
+.title-notice {
+  margin: 0.5rem 0 0;
+  color: #854d0e;
+  font-size: 0.9rem;
 }
 
 .link-url {
@@ -185,7 +202,7 @@ a:focus-visible {
     flex-direction: column;
   }
 
-  .delete-button {
-    justify-self: start;
+  .link-actions {
+    justify-content: flex-start;
   }
 }

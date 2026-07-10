@@ -39,6 +39,13 @@ function textContent(nodes) {
   }).join('');
 }
 
+function blockedTitleResult(url) {
+  return {
+    title: new URL(url).hostname,
+    titleStatus: 'unavailable'
+  };
+}
+
 async function fetchPageTitle(url, { fetchImpl = fetch, timeoutMs = 5000 } = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -48,6 +55,10 @@ async function fetchPageTitle(url, { fetchImpl = fetch, timeoutMs = 5000 } = {})
       headers: { accept: 'text/html,application/xhtml+xml' },
       signal: controller.signal
     });
+
+    if ([401, 403, 429].includes(response.status)) {
+      return blockedTitleResult(url);
+    }
 
     if (!response.ok) {
       throw new RemoteFetchError('The page could not be retrieved.');
@@ -79,4 +90,4 @@ async function fetchPageTitle(url, { fetchImpl = fetch, timeoutMs = 5000 } = {})
   }
 }
 
-module.exports = { extractTitle, fetchPageTitle };
+module.exports = { blockedTitleResult, extractTitle, fetchPageTitle };

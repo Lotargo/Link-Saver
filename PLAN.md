@@ -85,7 +85,7 @@ The exact response shapes will be documented once implemented.
 
 - Only `http:` and `https:` URLs are accepted.
 - Duplicate URLs are allowed unless implementation evidence suggests a simpler, safer rule.
-- A page without a usable title is not saved and returns a clear error.
+- A page without a usable title is not saved and returns a clear error, except when it explicitly blocks automatic retrieval (HTTP 401, 403, or 429). In that case the link is saved with its hostname and marked as having an unavailable title.
 - The application is designed for one local user and one server process.
 - Remote requests use a finite timeout and check the HTTP response status.
 - Full SSRF defence is outside this time-boxed version and must be listed as a production improvement.
