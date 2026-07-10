@@ -2,9 +2,9 @@
 
 ## Current handoff
 
-- Current phase: Phase 2, Core backend.
-- Last verified state: the pnpm-based Express foundation serves the initial frontend page; tests, linting, and a manual HTTP smoke test pass.
-- Next action: implement JSON persistence, beginning with storage initialization and malformed-data handling.
+- Current phase: Phase 3, Core frontend.
+- Last verified state: the backend persists links in a local JSON file, validates and fetches titles, and exposes list, create, and delete API operations; tests, linting, and a manual API smoke test pass.
+- Next action: build the URL form and saved-links interface against the completed API.
 - Blockers: none.
 
 ## Phase 0: Preparation
@@ -38,32 +38,32 @@
 
 ### Persistence
 
-- [ ] Create the data directory and initial JSON file when absent.
-- [ ] Load persisted links after restart.
-- [ ] Reject malformed persisted data without silently overwriting it.
-- [ ] Keep file writes atomic where practical.
-- [ ] Keep storage independent from Express request and response objects.
-- [ ] Add tests for initialization, loading, saving, updating, and deleting.
+- [x] Create the data directory and initial JSON file when absent.
+- [x] Load persisted links after restart.
+- [x] Reject malformed persisted data without silently overwriting it.
+- [x] Keep file writes atomic where practical.
+- [x] Keep storage independent from Express request and response objects.
+- [x] Add tests for initialization, loading, saving, updating, and deleting.
 
 ### URL and title handling
 
-- [ ] Reject missing or non-string URLs.
-- [ ] Accept only HTTP and HTTPS.
-- [ ] Fetch remote pages with a finite timeout.
-- [ ] Check unsuccessful HTTP responses.
-- [ ] Extract titles without a fragile regular expression.
-- [ ] Handle pages without a usable title.
-- [ ] Add tests for valid URLs, invalid URLs, timeouts, response errors, and missing titles.
+- [x] Reject missing or non-string URLs.
+- [x] Accept only HTTP and HTTPS.
+- [x] Fetch remote pages with a finite timeout.
+- [x] Check unsuccessful HTTP responses.
+- [x] Extract titles without a fragile regular expression.
+- [x] Handle pages without a usable title.
+- [x] Add tests for valid URLs, invalid URLs, timeouts, response errors, and missing titles.
 
 ### API
 
-- [ ] Implement `GET /api/links`.
-- [ ] Implement `POST /api/links`.
-- [ ] Implement `DELETE /api/links/:id`.
-- [ ] Return a not-found response for unknown IDs.
-- [ ] Prevent deletion of unrelated links.
-- [ ] Map expected failures to clear status codes and messages.
-- [ ] Add API or service-level regression tests for core behaviour.
+- [x] Implement `GET /api/links`.
+- [x] Implement `POST /api/links`.
+- [x] Implement `DELETE /api/links/:id`.
+- [x] Return a not-found response for unknown IDs.
+- [x] Prevent deletion of unrelated links.
+- [x] Map expected failures to clear status codes and messages.
+- [x] Add API or service-level regression tests for core behaviour.
 
 ## Phase 3: Core frontend
 
@@ -127,3 +127,4 @@
 Add only information needed by the next session. Keep this section short.
 
 - Phase 1 verification: `pnpm test`, `pnpm lint`, and a manual HTTP request to the running server passed on 2026-07-10.
+- Phase 2 verification: `pnpm test` (10 passing), `pnpm lint`, and manual `GET /api/links` plus invalid `POST /api/links` checks passed on 2026-07-10.
