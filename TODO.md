@@ -2,9 +2,9 @@
 
 ## Current handoff
 
-- Current phase: Phase 1, Project foundation.
-- Last verified state: planning and repository instructions are complete; no application code exists yet.
-- Next action: initialize the pnpm project and create the minimal runnable foundation.
+- Current phase: Phase 2, Core backend.
+- Last verified state: the pnpm-based Express foundation serves the initial frontend page; tests, linting, and a manual HTTP smoke test pass.
+- Next action: implement JSON persistence, beginning with storage initialization and malformed-data handling.
 - Blockers: none.
 
 ## Phase 0: Preparation
@@ -21,18 +21,18 @@
 
 ## Phase 1: Project foundation
 
-- [ ] Enable and use pnpm.
-- [ ] Create `package.json`.
-- [ ] Pin the pnpm version with the `packageManager` field.
-- [ ] Commit `pnpm-lock.yaml`.
-- [ ] Add `start`, `dev`, `test`, and `lint` scripts.
-- [ ] Add only the dependencies required by the chosen implementation.
-- [ ] Create `.gitignore`.
-- [ ] Create backend and frontend entry points.
-- [ ] Serve the initial frontend page.
-- [ ] Establish backend and frontend test locations.
-- [ ] Run the initial test and lint commands.
-- [ ] Perform a manual startup smoke test.
+- [x] Enable and use pnpm.
+- [x] Create `package.json`.
+- [x] Pin the pnpm version with the `packageManager` field.
+- [x] Commit `pnpm-lock.yaml`.
+- [x] Add `start`, `dev`, `test`, and `lint` scripts.
+- [x] Add only the dependencies required by the chosen implementation.
+- [x] Create `.gitignore`.
+- [x] Create backend and frontend entry points.
+- [x] Serve the initial frontend page.
+- [x] Establish backend and frontend test locations.
+- [x] Run the initial test and lint commands.
+- [x] Perform a manual startup smoke test.
 
 ## Phase 2: Core backend
 
@@ -126,4 +126,4 @@
 
 Add only information needed by the next session. Keep this section short.
 
-- No unresolved decisions at the end of Phase 0.
+- Phase 1 verification: `pnpm test`, `pnpm lint`, and a manual HTTP request to the running server passed on 2026-07-10.
