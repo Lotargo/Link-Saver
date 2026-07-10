@@ -29,4 +29,4 @@ Actual key prompts used during implementation will be added later without rewrit
 
 ## Status
 
-Planning and repository instructions are being prepared. Application code has not been implemented yet.
+The planning and instruction layer is complete. Application code has not been implemented yet. The next step is Phase 1 in `PLAN.md`.
