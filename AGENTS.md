@@ -33,18 +33,18 @@ Do not assume that unchecked work is complete. Do not repeat completed work unle
 
 ## Required workflow
 
-For each task:
+For each coherent batch of related tasks:
 
-1. Identify the smallest coherent change that satisfies the next unchecked item.
+1. Identify the smallest complete result to implement next.
 2. Inspect the surrounding code before editing it.
 3. Keep responsibilities separated by module or package boundary.
 4. Add or update tests for every core function and important behaviour.
 5. Run the relevant checks.
 6. Fix failures before moving on.
 7. Update `TODO.md` only after the work is verified.
-8. Commit one logical unit of work with a clear message.
+8. Commit the completed batch before starting unrelated work.
 
-Do not mark a task complete merely because code was written.
+A commit may cover several adjacent TODO items when they form one logical result. Do not mark work complete merely because code was written.
 
 ## Repository-wide constraints
 
@@ -87,12 +87,8 @@ Before ending a session:
 
 ## Commit guidance
 
-Use concise conventional-style messages where practical, for example:
+Commit completed, related work rather than every task or file. Before committing, review the diff, run the relevant checks, and update `TODO.md`.
 
-- `docs: define project workflow`
-- `chore: initialize pnpm project`
-- `feat: add persistent link storage`
-- `test: cover link deletion regression`
-- `fix: preserve unrelated links on delete`
+Use a concise conventional-style subject. In the commit body, briefly state what was implemented and include the results of checks when applicable.
 
-Do not manufacture artificial commits after the work is finished. Commit at real phase or task boundaries.
+Do not commit partial or failing work to `main`, mix unrelated changes, or manufacture artificial history after the work is finished.
