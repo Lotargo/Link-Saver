@@ -2,9 +2,9 @@
 
 ## Current handoff
 
-- Current phase: Phase 6, Delivery.
-- Last verified state: Phase 5 review is complete; all automated checks pass.
-- Next action: complete the README and delivery checklist.
+- Current phase: Complete.
+- Last verified state: local and deployed applications passed user browser verification; delivery documents, video, review files, and deployment configuration are complete.
+- Next action: none; the repository is ready for submission.
 - Blockers: none.
 
 ## Phase 0: Preparation
@@ -107,21 +107,33 @@
 
 ## Phase 6: Delivery
 
-- [ ] Add final installation and run instructions to `README.md`.
-- [ ] Document assumptions and deliberately omitted work.
-- [ ] Document stack choice and growth path.
-- [ ] Document the exact files changed for favourites.
-- [ ] Add the paragraph of questions that would have been asked before starting.
-- [ ] Save 2–3 actual key AI prompts without rewriting them after the fact.
-- [ ] Explain the repository-driven AI workflow in the prompt notes.
-- [ ] Run a clean `pnpm install`.
-- [ ] Run `pnpm test`.
-- [ ] Run `pnpm lint`.
-- [ ] Start the application from the documented instructions.
-- [ ] Verify persistence across restart.
-- [ ] Check that no secrets or runtime data are committed.
-- [ ] Review the commit history for coherent real work boundaries.
-- [ ] Record the three-minute walkthrough.
+- [x] Add final installation and run instructions to `README.md`.
+- [x] Document assumptions and deliberately omitted work.
+- [x] Document stack choice and growth path.
+- [x] Document the exact files changed for favourites.
+- [x] Add the paragraph of questions that would have been asked before starting.
+- [x] Save 2–3 actual key AI prompts without rewriting them after the fact.
+- [x] Explain the repository-driven AI workflow in the prompt notes.
+- [x] Run a clean `pnpm install`.
+- [x] Run `pnpm test`.
+- [x] Run `pnpm lint`.
+- [x] Start the application from the documented instructions.
+- [x] Verify persistence across restart.
+- [x] Check that no secrets or runtime data are committed.
+- [x] Review the commit history for coherent real work boundaries.
+- [x] Record the three-minute walkthrough.
+
+## Deployment: Vercel and Neon (added after the original plan)
+
+- [x] Record the architecture change from JSON deployment persistence to Neon.
+- [x] Add a Neon serverless storage implementation without an ORM.
+- [x] Add `DATABASE_URL` configuration for local and Vercel environments.
+- [x] Add the Vercel function entrypoint and static-asset routing.
+- [x] Create the Vercel project as `link_saver` (normalised from `Link_Saver`).
+- [x] Add `DATABASE_URL` to Vercel Production as a sensitive environment variable.
+- [x] Fix the Vercel Node runtime incompatibility with ESM-only `htmlparser2`.
+- [x] Deploy to Vercel and verify `GET /` and `GET /api/links` return 200.
+- [x] Perform a user browser smoke test against the deployed application.
 
 ## Session notes
 
@@ -133,3 +145,8 @@ Add only information needed by the next session. Keep this section short.
 - Phase 4 verification: `pnpm test` (22 passing), `pnpm lint`, and a local HTTP smoke test (`GET /api/links` = 200; invalid favourite `PATCH` = 400) passed on 2026-07-10. The user confirmed browser verification of favourites, layout, and the unavailable-title marker for `https://chatgpt.com/`.
 - Phase 5 verification: `REVIEW.md` includes the supplied source material, prioritised findings, breaking states, corrected code, and deletion-regression confirmation. `pnpm test` (22 passing) and `pnpm lint` passed on 2026-07-10.
 - Russian review: `REVIEW_RU.md` mirrors the Phase 5 review for Russian-speaking readers.
+- Phase 6 preparation: `pnpm install --frozen-lockfile`, `pnpm test` (22 passing), and `pnpm lint` passed on 2026-07-10. The application started successfully and returned 200 for `/` and `/api/links` on a temporary local port. No runtime data or environment files are tracked. The user confirmed that links and favourite state persist after restarting the server. Delivery-document review and walkthrough recording remain pending; delivery documentation is intentionally uncommitted.
+- Deployment preparation: the user provisioned Neon and configured a local `DATABASE_URL` on 2026-07-11. Vercel deployment requires moving persistence from the JSON file to Neon because the function filesystem is not persistent.
+- Neon migration and deployment: added the Neon serverless store, local `.env` loading, Vercel entrypoint and routing, and isolated storage tests. `pnpm test` (25 passing) and `pnpm lint` passed on 2026-07-11. The Vercel project `link_saver` was created, `DATABASE_URL` was stored as a sensitive Production variable, and https://linksaver-gamma.vercel.app was deployed. HTTP checks for `/` and `/api/links` returned 200 after resolving the `htmlparser2` ESM runtime failure; browser verification was pending at this point.
+- Deployment browser verification: the user confirmed saving, favourites, filtering, persistence after a local restart, and equivalent Vercel behaviour. An anonymous browser window confirmed shared data can be read and deleted; the deletion was then visible in the primary browser window. The walkthrough video link is recorded in `README.md`.
+- Final verification: the user approved the delivery review on 2026-07-11. `pnpm test` (25 passing) and `pnpm lint` passed immediately before the final commit.

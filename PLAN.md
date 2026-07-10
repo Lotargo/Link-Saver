@@ -23,7 +23,7 @@ The first version will not include:
 - React or another frontend framework;
 - TypeScript or a build pipeline;
 - Docker;
-- an ORM or external database;
+- an ORM;
 - pagination, tagging, search, or link previews;
 - production-grade distributed locking;
 - a claim of complete SSRF protection.
@@ -36,7 +36,7 @@ Omitted items should be acknowledged honestly in the final README.
 - Server: Express.
 - Frontend: plain HTML, CSS, and JavaScript.
 - Package manager: pnpm.
-- Persistence: a local JSON file.
+- Persistence: Neon Serverless Postgres through `DATABASE_URL`; the existing JSON store remains available only as a local fallback when that variable is absent.
 - Tests: Node.js built-in test runner, with extra test tooling only when it clearly improves coverage.
 - IDs: stable string identifiers rather than timestamps.
 - Dates: ISO 8601 strings in persistence and API responses.
@@ -202,3 +202,7 @@ Expected commit:
 ## Change policy
 
 A phase may be adjusted when implementation reveals a better choice, but the reason must be written here and the corresponding checklist updated before unrelated work continues.
+
+## Recorded changes
+
+- 2026-07-11: replace the deployment persistence layer with Neon Serverless Postgres. Vercel Functions do not provide a persistent writable filesystem, so retaining the JSON file for the deployed application would violate the persistence requirement. This keeps the application deployable while preserving the no-ORM boundary.

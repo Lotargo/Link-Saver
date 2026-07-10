@@ -1,39 +1,96 @@
 # Link Saver
 
-A small single-page application for saving links, fetching page titles automatically, deleting saved links, and marking favourites.
+Небольшое одностраничное приложение для сохранения ссылок. Оно получает заголовок страницы, показывает время сохранения, позволяет удалить ссылку, пометить её как избранную и отфильтровать только избранные.
 
-This repository is being built as a time-boxed take-home task. The implementation is intentionally small, testable, and easy to run.
+Проект выполнен как ограниченное по времени тестовое задание: приоритетом были понятная архитектура, проверяемое поведение и честно обозначенные ограничения, а не дополнительные функции.
 
-## Planned stack
+## Запуск
 
-- Node.js
-- Express
-- Plain HTML, CSS, and JavaScript
-- JSON file persistence
-- pnpm
-- Node.js built-in test runner
+Требуется Node.js 20 или новее, pnpm и Neon Postgres connection string.
 
-The stack is provisional until the foundation phase is completed. Any change must be recorded in `PLAN.md` and `TODO.md`.
+Создайте локальный `.env` из шаблона (сам `.env` игнорируется Git):
 
-## Project workflow
+```powershell
+Copy-Item .env.example .env
+```
 
-The repository keeps durable project context in files instead of repeating the same instructions in every AI prompt:
+Затем замените значение `DATABASE_URL` в `.env` на свою строку подключения Neon.
 
-- [`AGENTS.md`](./AGENTS.md) contains repository-wide rules.
-- [`PLAN.md`](./PLAN.md) defines implementation phases and boundaries.
-- [`TODO.md`](./TODO.md) records progress and session handoff state.
-- [`skills/backend/SKILL.md`](./skills/backend/SKILL.md) contains backend-specific instructions.
-- [`skills/frontend/SKILL.md`](./skills/frontend/SKILL.md) contains frontend-specific instructions.
+```bash
+pnpm install
+pnpm start
+```
 
-Actual key prompts used during implementation will be added later without rewriting them after the fact.
+Откройте [http://localhost:3000](http://localhost:3000). При первом запуске приложение создаст таблицу `saved_links` в указанной Neon-базе. Когда `DATABASE_URL` отсутствует, для локальной разработки сохраняется прежний JSON fallback в `data/links.json`; этот файл исключён из Git.
 
-## Status
+Для режима разработки с перезапуском при изменении файлов:
 
-The planning and instruction layer is complete. Application code has not been implemented yet. The next step is Phase 1 in `PLAN.md`.
+```bash
+pnpm dev
+```
 
-## Favourite feature files
+Проверки:
 
-The favourite state and favourites-only filtering are implemented in:
+```bash
+pnpm test
+pnpm lint
+```
+
+## Поведение
+
+- Принимаются только непустые HTTP(S)-URL.
+- Сервер получает HTML-страницу с тайм-аутом в пять секунд и извлекает заголовок HTML-парсером.
+- Ссылки, избранное и время сохранения переживают перезапуск через JSON-хранилище.
+- Страницы без заголовка, не-HTML ответы, сетевые сбои и ошибки HTTP показывают короткое понятное сообщение.
+- Если сайт явно блокирует автоматическое получение (HTTP 401, 403 или 429), ссылка всё равно сохраняется с именем домена и отметкой о недоступном заголовке.
+
+## Деплой на Vercel
+
+В Vercel нужно создать environment variable `DATABASE_URL` со строкой подключения Neon, затем выполнить:
+
+```bash
+vercel --name Link_Saver --prod
+```
+
+Vercel Functions не имеют постоянной записываемой файловой системы, поэтому production-вариант использует Neon, а не локальный JSON-файл. Для serverless-нагрузки рекомендуется pooled connection string Neon.
+
+Production deployment: [https://linksaver-gamma.vercel.app](https://linksaver-gamma.vercel.app). Имя Vercel-проекта — `link_saver`: платформа требует нижний регистр, поэтому исходное желаемое имя `Link_Saver` было нормализовано.
+
+### Что было изменено для успешного Vercel-деплоя
+
+- Добавлены `@neondatabase/serverless` и `src/backend/storage/neon-link-store.js`. Хранилище создаёт таблицу `saved_links` и использует `DATABASE_URL`; JSON остаётся только локальным fallback.
+- Добавлен `dotenv`, чтобы локальный `pnpm start` считывал игнорируемый `.env`, а Vercel получает тот же ключ из production environment variable.
+- Добавлены `api/index.js` и `vercel.json`: function инициализирует Neon перед обработкой запросов, а rewrite направляет и API, и интерфейс в Express-приложение. `includeFiles` включает фронтенд-статические файлы в bundle функции.
+- Строка подключения Neon добавлена в Vercel как encrypted production secret; она не находится в Git.
+- `htmlparser2` закреплён на CommonJS-совместимой версии 10. Версия 12 является ESM и приводила к `FUNCTION_INVOCATION_FAILED` при `require()` в Node runtime Vercel.
+- `.gitignore` расширен для `.env`, runtime-данных и временных логов smoke-test (`*.log`, `*.out`, `*.err`).
+
+После публикации проверены `GET /` и `GET /api/links`: оба возвращают HTTP 200. Ручная browser-проверка сохранения и избранного в опубликованной версии остаётся обязательной.
+
+## Принятые решения и ограничения
+
+Приложение рассчитано на одного пользователя и один процесс Node.js при локальном JSON fallback. Для облачного запуска используется Neon Serverless Postgres: это обеспечивает постоянное хранилище в Vercel без ORM. JSON fallback выполняет запись через временный файл и переименование, чтобы не портить основной файл при прерывании записи.
+
+Дубликаты URL разрешены: это простое и предсказуемое поведение, а правило дедупликации в брифе не задано. Для URL проверяются схема, тайм-аут, статус ответа и тип контента, но полной защиты от SSRF здесь нет: для production-варианта нужны проверки адресов после DNS-разрешения и на каждом редиректе.
+
+Намеренно не добавлялись аутентификация, несколько пользователей, теги, поиск, пагинация, предпросмотр ссылок, внешняя БД, ORM, Docker и фронтенд-фреймворк.
+
+Если проект потребуется развивать, JSON-хранилище следует заменить репозиторием на базе БД с миграциями и пользовательским владением записями. Получение страниц стоит вынести в отдельную очередь задач с ограничениями на сеть и наблюдаемостью.
+
+## Стек и структура
+
+- Node.js и Express — минимальный HTTP-сервер без лишней инфраструктуры.
+- Обычные HTML, CSS и JavaScript — интерфейс не требует сборщика или React.
+- Neon Serverless Postgres — постоянное хранилище для Vercel; JSON-файл остаётся локальным fallback для одного процесса.
+- Встроенный `node:test` — быстрые изолированные тесты без дополнительного тестового рантайма.
+
+Код разделён по ответственности: маршруты не работают с хранилищем напрямую, сервисы реализуют поведение, хранилища отвечают за JSON или Neon, а URL и заголовки находятся в отдельных модулях. При росте приложения эта граница позволяет заменить хранилище и способ фоновой загрузки страниц без переписывания интерфейса и HTTP-маршрутов.
+
+## Функция «избранное»: изменённые файлы
+
+При добавлении избранного и фильтра были изменены следующие файлы.
+
+Реализация и тесты:
 
 - `src/backend/routes/link-routes.js`
 - `src/backend/services/link-service.js`
@@ -44,3 +101,45 @@ The favourite state and favourites-only filtering are implemented in:
 - `tests/backend/api.test.js`
 - `tests/backend/json-link-store.test.js`
 - `tests/frontend/app.test.js`
+
+Документация состояния задачи:
+
+- `README.md`
+- `TODO.md`
+
+## Ревью существующего кода
+
+- [REVIEW_RU.md](./REVIEW_RU.md) — русская версия ревью и исправленного кода.
+- [REVIEW.md](./REVIEW.md) — английская версия.
+
+## Как использовался AI
+
+Работа велась в repository-driven формате: решения, границы и последовательность фаз хранятся в `PLAN.md`; завершённые проверки и следующий шаг — в `TODO.md`; общие правила и узкие технические правила — в `AGENTS.md` и двух skill-файлах. Благодаря этому между сессиями можно было продолжать работу короткой командой, а не заново пересказывать контекст. Изменения интерфейса проверялись пользователем вручную в браузере; автоматизация browser-проверок не использовалась из-за временной нестабильности Windows-приложения Codex.
+
+Ниже — реальные сообщения, сохранённые без переписывания после работы:
+
+> можем приступать к работе над 4 фазой
+
+> блоки расположены криво. так же добавь в agents.md правило, что коммитить нельзя до браузерных проверок пользователем, после того как он удостоверится, что всё хорошо, то только тогда отправлять коммит
+
+> в таких случаях нам нужно отлавливать такие защиты и отдельно их помечать, а не показывать как ошибку
+
+## Что я бы уточнил до начала
+
+До начала работы я бы уточнил, какой формат демонстрации работы с AI для вас наиболее полезен: несколько подробных промптов или описание repository-driven процесса, где план, TODO и проектные инструкции позволяют продолжать работу короткими командами и сохранять решения между сессиями.
+
+## План трёхминутного walkthrough
+
+1. Запустить `pnpm start` и открыть приложение.
+2. Сохранить обычную ссылку, показать полученный заголовок и время.
+3. Добавить и снять избранное, включить фильтр «Favourites only».
+4. Удалить одну ссылку и показать, что другая осталась.
+5. Сохранить `https://chatgpt.com/` и показать нейтральную отметку о недоступном заголовке вместо ошибки.
+6. Перезапустить сервер и показать сохранённые записи.
+7. Кратко показать `REVIEW_RU.md`, `PLAN.md`, `TODO.md` и историю осмысленных коммитов.
+
+## Запись walkthrough
+
+[Открыть трёхминутную запись](https://drive.google.com/file/d/105p0p4w-KA3LGFHEHc8Gcunt9qngyxV4/view?usp=sharing)
+
+В записи показаны локальный запуск, сохранение обычной ссылки и `https://chatgpt.com/` с нейтральной отметкой о недоступном заголовке, избранное и фильтр. После перезапуска локального сервера подтверждено сохранение ссылок и статуса избранного. Также показан Vercel-деплой: те же действия проверены в опубликованной версии, а в анонимном окне отдельно подтверждены чтение и удаление общих данных; результат удаления затем виден и в основном окне браузера.
