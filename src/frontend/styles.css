@@ -8,6 +8,11 @@ body {
   margin: 0;
 }
 
+button,
+input {
+  font: inherit;
+}
+
 .page {
   width: min(100% - 2rem, 42rem);
   margin: 4rem auto;
@@ -15,4 +20,136 @@ body {
   background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgb(15 23 42 / 12%);
+}
+
+.page-header p {
+  margin-top: -0.5rem;
+  color: #475569;
+}
+
+.link-form,
+.link-list {
+  margin: 1.5rem 0;
+}
+
+.form-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+input {
+  min-width: 0;
+  flex: 1;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #94a3b8;
+  border-radius: 0.25rem;
+}
+
+button {
+  padding: 0.65rem 0.85rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: #1d4ed8;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: #1e40af;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+.message {
+  margin: 1rem 0;
+}
+
+.message-error {
+  padding: 0.75rem;
+  border-left: 4px solid #b91c1c;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.empty-state {
+  color: #475569;
+}
+
+.link-list {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.link-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.35rem;
+}
+
+.link-title,
+.link-url {
+  overflow-wrap: anywhere;
+}
+
+.link-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.link-url,
+.link-time {
+  display: block;
+  margin-top: 0.35rem;
+}
+
+.link-url {
+  color: #1d4ed8;
+}
+
+.link-time {
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.delete-button {
+  align-self: start;
+  background: #b91c1c;
+}
+
+.delete-button:hover:not(:disabled) {
+  background: #991b1b;
+}
+
+@media (max-width: 34rem) {
+  .page {
+    width: auto;
+    margin: 1rem;
+    padding: 1.25rem;
+  }
+
+  .form-row,
+  .link-card {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .delete-button {
+    justify-self: start;
+  }
 }

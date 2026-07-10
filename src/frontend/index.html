@@ -4,12 +4,32 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Link Saver</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
     <main class="page">
-      <h1>Link Saver</h1>
-      <p>Your saved links will appear here.</p>
+      <header class="page-header">
+        <h1>Link Saver</h1>
+        <p>Save a page and return to it later.</p>
+      </header>
+
+      <form id="link-form" class="link-form">
+        <label for="url">Page URL</label>
+        <div class="form-row">
+          <input id="url" name="url" type="url" inputmode="url" autocomplete="url" placeholder="https://example.com" required>
+          <button id="save-button" type="submit">Save link</button>
+        </div>
+      </form>
+
+      <p id="error-message" class="message message-error" role="alert" hidden></p>
+      <p id="loading-message" class="message" role="status" hidden></p>
+
+      <section aria-labelledby="saved-links-heading">
+        <h2 id="saved-links-heading">Saved links</h2>
+        <p id="empty-state" class="empty-state" hidden>No links saved yet. Add a page above to get started.</p>
+        <ul id="link-list" class="link-list" aria-live="polite"></ul>
+      </section>
     </main>
     <script src="/app.js"></script>
   </body>

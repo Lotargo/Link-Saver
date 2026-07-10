@@ -2,9 +2,9 @@
 
 ## Current handoff
 
-- Current phase: Phase 3, Core frontend.
-- Last verified state: the backend persists links in a local JSON file, validates and fetches titles, and exposes list, create, and delete API operations; tests, linting, and a manual API smoke test pass.
-- Next action: build the URL form and saved-links interface against the completed API.
+- Current phase: Phase 4, Favourite feature.
+- Last verified state: the frontend submits and lists links, displays titles, URLs, and timestamps, deletes selected links, and exposes loading, empty, and error states; tests, linting, static-asset checks, and a user-performed browser smoke test pass.
+- Next action: add persisted favourites and the filtering API operation.
 - Blockers: none.
 
 ## Phase 0: Preparation
@@ -67,18 +67,18 @@
 
 ## Phase 3: Core frontend
 
-- [ ] Create the URL form.
-- [ ] Load saved links on startup.
-- [ ] Render titles, URLs, and saved timestamps.
-- [ ] Delete one selected link.
-- [ ] Show a useful empty state.
-- [ ] Show a loading state during submission.
-- [ ] Prevent accidental repeated submission.
-- [ ] Show user-facing errors without internal details.
-- [ ] Restore controls after failed requests.
-- [ ] Keep API, state, rendering, and event responsibilities distinguishable.
-- [ ] Add tests for core state and rendering behaviour.
-- [ ] Perform a manual browser smoke test.
+- [x] Create the URL form.
+- [x] Load saved links on startup.
+- [x] Render titles, URLs, and saved timestamps.
+- [x] Delete one selected link.
+- [x] Show a useful empty state.
+- [x] Show a loading state during submission.
+- [x] Prevent accidental repeated submission.
+- [x] Show user-facing errors without internal details.
+- [x] Restore controls after failed requests.
+- [x] Keep API, state, rendering, and event responsibilities distinguishable.
+- [x] Add tests for core state and rendering behaviour.
+- [x] Perform a manual browser smoke test.
 
 ## Phase 4: Favourite feature
 
@@ -128,3 +128,4 @@ Add only information needed by the next session. Keep this section short.
 
 - Phase 1 verification: `pnpm test`, `pnpm lint`, and a manual HTTP request to the running server passed on 2026-07-10.
 - Phase 2 verification: `pnpm test` (10 passing), `pnpm lint`, and manual `GET /api/links` plus invalid `POST /api/links` checks passed on 2026-07-10.
+- Phase 3 verification: `pnpm test` (14 passing), `pnpm lint`, and static checks for `/` and `/favicon.svg` passed on 2026-07-10. The user manually verified saving and viewing a link in the browser. The timestamp field regression (`createdAt` versus API field `savedAt`) was fixed with a frontend regression test.
