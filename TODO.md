@@ -2,9 +2,9 @@
 
 ## Current handoff
 
-- Current phase: Phase 5, Existing-code review.
-- Last verified state: favourites, layout, and blocked-title markers work in the browser; automated checks pass.
-- Next action: create `REVIEW.md` and begin the existing-code review.
+- Current phase: Phase 6, Delivery.
+- Last verified state: Phase 5 review is complete; all automated checks pass.
+- Next action: complete the README and delivery checklist.
 - Blockers: none.
 
 ## Phase 0: Preparation
@@ -93,17 +93,17 @@
 
 ## Phase 5: Existing-code review
 
-- [ ] Create `REVIEW.md`.
-- [ ] Identify destructive data-loss bugs.
-- [ ] Identify runtime and startup failures.
-- [ ] Identify validation and network failures.
-- [ ] Identify title-extraction failures.
-- [ ] Identify persistence and path reliability issues.
-- [ ] Identify lower-severity API and cosmetic issues.
-- [ ] Rank each finding by severity.
-- [ ] Explain the breaking input or state for each finding.
-- [ ] Provide corrected code.
-- [ ] Confirm the correction does not reproduce the destructive deletion bug.
+- [x] Create `REVIEW.md`.
+- [x] Identify destructive data-loss bugs.
+- [x] Identify runtime and startup failures.
+- [x] Identify validation and network failures.
+- [x] Identify title-extraction failures.
+- [x] Identify persistence and path reliability issues.
+- [x] Identify lower-severity API and cosmetic issues.
+- [x] Rank each finding by severity.
+- [x] Explain the breaking input or state for each finding.
+- [x] Provide corrected code.
+- [x] Confirm the correction does not reproduce the destructive deletion bug.
 
 ## Phase 6: Delivery
 
@@ -131,3 +131,4 @@ Add only information needed by the next session. Keep this section short.
 - Phase 2 verification: `pnpm test` (10 passing), `pnpm lint`, and manual `GET /api/links` plus invalid `POST /api/links` checks passed on 2026-07-10.
 - Phase 3 verification: `pnpm test` (14 passing), `pnpm lint`, and static checks for `/` and `/favicon.svg` passed on 2026-07-10. The user manually verified saving and viewing a link in the browser. The timestamp field regression (`createdAt` versus API field `savedAt`) was fixed with a frontend regression test.
 - Phase 4 verification: `pnpm test` (22 passing), `pnpm lint`, and a local HTTP smoke test (`GET /api/links` = 200; invalid favourite `PATCH` = 400) passed on 2026-07-10. The user confirmed browser verification of favourites, layout, and the unavailable-title marker for `https://chatgpt.com/`.
+- Phase 5 verification: `REVIEW.md` includes the supplied source material, prioritised findings, breaking states, corrected code, and deletion-regression confirmation. `pnpm test` (22 passing) and `pnpm lint` passed on 2026-07-10.
